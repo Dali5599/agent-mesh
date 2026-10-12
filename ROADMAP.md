@@ -7,7 +7,7 @@ agent-mesh is a production-ready, highly modular distributed service mesh design
 ## Découpage des Phases de Développement
 
 - [x] **Phase 1** : Core Domain Models & Data Structures - _Establish strictly typed domain entities for agent services, messages, payloads, and mesh configuration using dataclasses and Pydantic._
-- [ ] **Phase 2** : Configuration & Environment Management - _Implement robust configuration loading via YAML and environment variables with strict validation._
+- [x] **Phase 2** : Configuration & Environment Management - _Implement robust configuration loading via YAML and environment variables with strict validation._
 - [ ] **Phase 3** : OpenTelemetry Tracing Infrastructure - _Setup distributed tracing, span context propagation, and metric collectors across mesh hops._
 - [ ] **Phase 4** : Intelligent Routing Engine - _Build a content-aware and capability-based routing engine to direct agent messages across the mesh._
 - [ ] **Phase 5** : Rate Limiting Subsystem - _Implement sliding window and token bucket rate limiters to protect agent nodes from traffic spikes._
