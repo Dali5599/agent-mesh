@@ -4,6 +4,13 @@
 
 # Agent-Mesh: High-Performance Distributed Service Mesh for AI Agent Swarms
 
+<p align="center">
+  <a href="https://dali5599.github.io/agent-mesh/">
+    <img src="https://img.shields.io/badge/Live_Demo-Interactive_Web_App-00c853?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo">
+  </a>
+</p>
+
+
 <div align="center">
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
