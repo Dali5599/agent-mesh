@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent-Mesh | Distributed Service Mesh for AI Agent Swarms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darker: '#07080c',
+                        dark: '#0a0b10',
+                        card: '#12141c',
+                        cyan: { 400: '#22d3ee', 500: '#06b6d4', 600: '#0891b2' },
+                        indigo: { 500: '#6366f1', 600: '#4f46e5' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0a0b10; color: #f3f4f6; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(18, 20, 28, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glow-cyan { box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.3); }
+        .glow-indigo { box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.3); }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse-slow { animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Notification Banner -->
+    <div class="bg-gradient-to-r from-indigo-900 via-cyan-900 to-indigo-900 text-xs py-2 px-4 text-center font-medium border-b border-cyan-500/20">
+        🚀 <span class="text-cyan-300 font-bold">v2.4.0 Released</span> — Native Semantic Routing & Recursive Loop Detection enabled. <a href="#sim" class="underline ml-2 text-white hover:text-cyan-200">Test Live Simulator &rarr;</a>
+    </div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center glow-cyan">
+                    <i class="fa-solid fa-cubes-stacked text-white text-lg"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">agent-mesh</span>
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#features" class="hover:text-cyan-400 transition">Features</a>
+                <a href="#sim" class="hover:text-cyan-400 transition">Live Mesh</a>
+                <a href="#architecture" class="hover:text-cyan-400 transition">Architecture</a>
+                <a href="#install" class="hover:text-cyan-400 transition">Installation</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="https://github.com" target="_blank" class="hidden sm:inline-flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition">
+                    <i class="fa-brands fa-github text-sm"></i>
+                    <span>Star on GitHub</span>
+                    <span class="bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded text-[10px]">1.4k</span>
+                </a>
+                <a href="#install" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg glow-cyan transition">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-16 overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent pointer-events-none"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-6 animate-pulse-slow">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span>Production-Ready Distributed Service Mesh for AI Swarms</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6">
+                Orchestrate & Secure <br>
+                <span class="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">AI Agent Swarms at Scale</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto mb-10">
+                High-performance infrastructure layer built specifically for A2A communications. Features semantic routing, deterministic loop breaking, and end-to-end token tracing.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#sim" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-500/25 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Launch Live Simulator</span>
+                </a>
+                <a href="#install" class="w-full sm:w-auto px-8 py-3.5 rounded-xl glass hover:bg-white/10 font-medium text-white transition flex items-center justify-center space-x-2 border border-white/10">
+                    <i class="fa-solid fa-terminal text-cyan-400"></i>
+                    <span>View Quickstart CLI</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE INTERACTIVE SIMULATOR -->
+    <section id="sim" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Live Agent Mesh Control Center</h2>
+            <p class="text-slate-400 text-sm">Real-time telemetry, semantic routing load, and distributed swarm node telemetry.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left & Middle: Telemetry & Swarm Control -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Metrics Gauges -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="glass p-4 rounded-xl border border-white/5">
+                        <div class="text-slate-400 text-xs mb-1">Mesh Throughput</div>
+                        <div class="text-2xl font-bold text-cyan-400 font-mono" id="metric-throughput">1,420 req/s</div>
+                        <div class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-up"></i> +12.4% vs last min</div>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-white/5">
+                        <div class="text-slate-400 text-xs mb-1">Token Consumption</div>
+                        <div class="text-2xl font-bold text-indigo-400 font-mono" id="metric-tokens">842k / min</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Cost: $1.68 / hr</div>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-white/5">
+                        <div class="text-slate-400 text-xs mb-1">Loop Breaker Trips</div>
+                        <div class="text-2xl font-bold text-amber-400 font-mono" id="metric-loops">3 avoided</div>
+                        <div class="text-[10px] text-amber-300 mt-1">Deterministic halted</div>
+                    </div>
+                    <div class="glass p-4 rounded-xl border border-white/5">
+                        <div class="text-slate-400 text-xs mb-1">Avg Latency</div>
+                        <div class="text-2xl font-bold text-emerald-400 font-mono" id="metric-latency">34 ms</div>
+                        <div class="text-[10px] text-emerald-400 mt-1">P99: 78ms</div>
+                    </div>
+                </div>
+
+                <!-- Swarm Interactive Actions & Controls -->
+                <div class="glass p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-sliders text-cyan-400"></i>
+                            <span>Swarm Orchestration Panel</span>
+                        </h3>
+                        <span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-400 font-mono">Mesh Status: Healthy</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <button onclick="triggerMeshAction('inject')" class="p-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-left transition group">
+                            <div class="text-cyan-400 font-semibold text-sm mb-1 group-hover:translate-x-1 transition">Inject Swarm Task</div>
+                            <div class="text-xs text-slate-400">Dispatch payload to Agent Node cluster</div>
+                        </button>
+                        <button onclick="triggerMeshAction('circuit')" class="p-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-left transition group">
+                            <div class="text-amber-400 font-semibold text-sm mb-1 group-hover:translate-x-1 transition">Test Circuit Breaker</div>
+                            <div class="text-xs text-slate-400">Simulate downstream LLM failure</div>
+                        </button>
+                        <button onclick="triggerMeshAction('webhook')" class="p-3 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-left transition group">
+                            <div class="text-indigo-400 font-semibold text-sm mb-1 group-hover:translate-x-1 transition">Trigger Webhook Alert</div>
+                            <div class="text-xs text-slate-400">Dispatch test alert payload to sink</div>
+                        </button>
+                    </div>
+
+                    <!-- Threshold Sliders -->
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-300">Recursion Depth Bound</span>
+                                <span class="text-cyan-400 font-mono" id="val-depth">5 hops</span>
+                            </div>
+                            <input type="range" min="2" max="15" value="5" oninput="document.getElementById('val-depth').innerText = this.value + ' hops'" class="w-full accent-cyan-400 bg-slate-800 rounded-lg h-1.5 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-300">Semantic Rate Limit Threshold</span>
+                                <span class="text-indigo-400 font-mono" id="val-rate">2500 tps</span>
+                            </div>
+                            <input type="range" min="500" max="5000" step="100" value="2500" oninput="document.getElementById('val-rate').innerText = this.value + ' tps'" class="w-full accent-indigo-400 bg-slate-800 rounded-lg h-1.5 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Live Streaming Terminal Logs -->
+            <div class="glass rounded-2xl border border-white/10 flex flex-col h-[400px] lg:h-auto overflow-hidden">
+                <div class="bg-black/40 px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                        <span class="text-xs text-slate-400 font-mono ml-2">agent-mesh-core-v2.log</span>
+                    </div>
+                    <button onclick="clearLogs()" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+                <div id="terminal-logs" class="p-4 font-mono text-xs text-slate-300 overflow-y-auto flex-1 space-y-2">
+                    <div class="text-cyan-400">[00:00:01] [INFO] Initializing agent-mesh control plane v2.4.0...</div>
+                    <div class="text-slate-400">[00:00:02] [NET] Connected to Redis cluster & Etcd registry.</div>
+                    <div class="text-emerald-400">[00:00:03] [MESH] Semantic router loaded 42 intent models.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section id="features" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-3xl font-bold text-white mb-4">Engineered for Complex AI Swarms</h2>
+            <p class="text-slate-400">Traditional service meshes fail at agent boundaries. Agent-Mesh provides native primitives built specifically for multi-tenant LLM architectures.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-route text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-3">Semantic & Dynamic Routing</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Route agent requests dynamically based on model capabilities, intent scoring, current token loads, and strict latency SLAs.</p>
+            </div>
+
+            <div class="glass p-8 rounded-2xl border border-white/10 hover:border-indigo-500/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-rotate-right text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-3">Deterministic Loop Detection</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Instantly intercept and halt recursive infinite loops in agent swarms using call-stack hashing and strict token recurrence bounds.</p>
+            </div>
+
+            <div class="glass p-8 rounded-2xl border border-white/10 hover:border-purple-500/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-3">Distributed Cost Tracing</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Track exact intent propagation, token consumption, latency, and financial costs across complex distributed agent execution hops.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-20 bg-card/40 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-4">High-Performance Architecture</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto mb-12">Designed for zero-loss A2A communications with blazing-fast control planes.</p>
+            
+            <div class="glass p-6 sm:p-10 rounded-2xl max-w-4xl mx-auto border border-white/10 font-mono text-xs sm:text-sm text-slate-300 overflow-x-auto">
+                <pre class="text-left text-cyan-300 leading-relaxed">
+                       +------------------------+
+                       |      Agent Mesh CLI    |
+                       +-----------+------------+
+                                   |
+                                   v
++------------------+   +------------------------+   +------------------+
+|   AI Agent A     +--->      API Gateway /     +--->   AI Agent B     |
+| (Producer Node)  |   |   Orchestration Core   |   | (Consumer Node)  |
++------------------+   +------------------------+   +------------------+
+                                   |
+         +-------------------------+-------------------------+
+         |                         |                         |
+         v                         v                         v
++------------------+     +------------------+     +------------------+
+|   Loop Breaker   |     | Circuit Breaker  |     |  Rate Limiter    |
++------------------+     +------------------+     +------------------+
+                </pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Quickstart Section -->
+    <section id="install" class="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">Get Started in Seconds</h2>
+            <p class="text-slate-400">Install the Agent-Mesh control plane and start routing your agent swarms.</p>
+        </div>
+
+        <div class="glass rounded-2xl border border-white/10 overflow-hidden">
+            <div class="bg-black/60 px-6 py-4 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-xs font-mono text-slate-400">
+                    <i class="fa-solid fa-terminal text-cyan-400"></i>
+                    <span>Terminal Installation</span>
+                </div>
+                <button onclick="copyInstallCode()" id="copy-btn" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition flex items-center space-x-2">
+                    <i class="fa-regular fa-copy"></i>
+                    <span id="copy-text">Copy Command</span>
+                </button>
+            </div>
+            <div class="p-6 font-mono text-sm sm:text-base text-cyan-300 bg-black/30 overflow-x-auto">
+                <code id="install-code">pip install agent-mesh && agent-mesh init --cluster production-swarm</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-white/10 py-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+                    <i class="fa-solid fa-cubes-stacked text-xs"></i>
+                </div>
+                <span class="font-semibold text-slate-300">agent-mesh</span>
+            </div>
+            <div>
+                Développé avec fierté par Requin AI Agent & Dali (@Dali5599)
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://github.com" target="_blank" class="hover:text-cyan-400 transition"><i class="fa-brands fa-github text-base"></i></a>
+                <a href="https://twitter.com" target="_blank" class="hover:text-cyan-400 transition"><i class="fa-brands fa-twitter text-base"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 glass bg-slate-900/90 border border-cyan-500/40 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <i class="fa-solid fa-bell text-sm" id="toast-icon"></i>
+        </div>
+        <div>
+            <div class="text-xs font-semibold text-cyan-300" id="toast-title">Mesh Telemetry Alert</div>
+            <div class="text-xs text-slate-300" id="toast-msg">Action dispatched successfully.</div>
+        </div>
+    </div>
+
+    <!-- Interactive JS Logic -->
+    <script>
+        // Web Audio API Sound Generator
+        function playBip(type = 'success') {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type === 'alert' ? 'sawtooth' : 'sine';
+                osc.frequency.setValueAtTime(type === 'alert' ? 220 : 587.33, ctx.currentTime);
+                if(type === 'success') {
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+                }
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } catch(e) {}
+        }
+
+        // Toast Notification System
+        function showToast(title, msg, type = 'success') {
+            playBip(type === 'alert' ? 'alert' : 'success');
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            
+            const icon = document.getElementById('toast-icon');
+            icon.className = type === 'alert' ? "fa-solid fa-triangle-exclamation text-amber-400" : "fa-solid fa-check text-cyan-400";
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        // Live Log Terminal Streaming Generator
+        const terminalLogs = document.getElementById('terminal-logs');
+        const logMessages = [
+            { text: "[NET] Routing intent 'code_generation' to node agent-beta-04", type: "text-slate-300" },
+            { text: "[METRIC] Token bucket checked: 142 tokens remaining", type: "text-cyan-400" },
+            { text: "[LOOP-BREAKER] Call-stack hash verified (hash: 0x8a92f)", type: "text-emerald-400" },
+            { text: "[WARN] Swarm node agent-delta-02 latency spike detected (74ms)", type: "text-amber-400" },
+            { text: "[MESH] Distributed tracing span closed successfully", type: "text-indigo-400" }
+        ];
+
+        function addLog(customText, customClass = "text-slate-300") {
+            const time = new Date().toTimeString().split(' ')[0];
+            const div = document.createElement('div');
+            div.className = customClass;
+            div.innerText = `[${time}] ${customText}`;
+            terminalLogs.appendChild(div);
+            terminalLogs.scrollTop = terminalLogs.scrollHeight;
+            if (terminalLogs.children.length > 50) {
+                terminalLogs.removeChild(terminalLogs.firstChild);
+            }
+        }
+
+        // Periodic live background logs & telemetry simulation
+        setInterval(() => {
+            const randomLog = logMessages[Math.floor(Math.random() * logMessages.length)];
+            addLog(randomLog.text.replace(/\[.*?\] /, ''), randomLog.type);
+
+            // Fluctuate metrics slightly
+            const tp = 1400 + Math.floor(Math.random() * 80);
+            document.getElementById('metric-throughput').innerText = tp.toLocaleString() + ' req/s';
+        }, 2500);
+
+        // Actions trigger
+        function triggerMeshAction(action) {
+            if(action === 'inject') {
+                showToast("Task Dispatched", "Payload successfully routed to agent cluster.");
+                addLog("[MESH] Injected high-priority swarm task into producer queue.", "text-cyan-400");
+            } else if(action === 'circuit') {
+                showToast("Circuit Breaker Tested", "Simulated downstream LLM fault handled gracefully.", "alert");
+                addLog("[CIRCUIT] Downstream LLM node timed out. Fallback model engaged.", "text-amber-400");
+            } else if(action === 'webhook') {
+                showToast("Webhook Sent", "Test alert dispatched to registered monitoring sink.");
+                addLog("[WEBHOOK] Successfully transmitted telemetry payload to endpoint.", "text-indigo-400");
+            }
+        }
+
+        function clearLogs() {
+            terminalLogs.innerHTML = '';
+            addLog("Terminal logs cleared.", "text-slate-500");
+        }
+
+        // Copy Install Code
+        function copyInstallCode() {
+            const code = document.getElementById('install-code').innerText;
+            navigator.clipboard.writeText(code);
+            showToast("Copied!", "Installation command copied to clipboard.");
+            const btnText = document.getElementById('copy-text');
+            btnText.innerText = "Copied!";
+            setTimeout(() => btnText.innerText = "Copy Command", 2000);
+        }
+    </script>
+</body>
+</html>
+</html>
