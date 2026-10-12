@@ -48,7 +48,7 @@ def get_client() -> MeshClient:
         )
     return _mesh_client
 
-@router.post("/nodes/register", response_status=status.HTTP_201_CREATED, response_model=Dict[str, Any])
+@router.post("/nodes/register", status_code=status.HTTP_201_CREATED, response_model=Dict[str, Any])
 async def register_node(
     registration: NodeRegistration,
     registry: NodeRegistry = Depends(get_registry)
@@ -68,7 +68,7 @@ async def register_node(
             detail=f"Registration failed: {str(e)}"
         )
 
-@router.delete("/nodes/{node_id}", response_status=status.HTTP_200_OK, response_model=Dict[str, Any])
+@router.delete("/nodes/{node_id}", status_code=status.HTTP_200_OK, response_model=Dict[str, Any])
 async def unregister_node(
     node_id: str,
     registry: NodeRegistry = Depends(get_registry)
@@ -87,7 +87,7 @@ async def unregister_node(
             detail=f"Unregistration failed: {str(e)}"
         )
 
-@router.post("/messages/dispatch", response_status=status.HTTP_200_OK, response_model=Dict[str, Any])
+@router.post("/messages/dispatch", status_code=status.HTTP_200_OK, response_model=Dict[str, Any])
 async def dispatch_message(
     message: AgentMessage,
     engine: RoutingEngine = Depends(get_engine),
@@ -133,7 +133,7 @@ async def dispatch_message(
             detail=f"Internal dispatch error: {str(e)}"
         )
 
-@router.get("/health", response_status=status.HTTP_200_OK, response_model=MeshHealthStatus)
+@router.get("/health", status_code=status.HTTP_200_OK, response_model=MeshHealthStatus)
 async def health_check(
     registry: NodeRegistry = Depends(get_registry)
 ) -> MeshHealthStatus:
@@ -157,7 +157,7 @@ async def health_check(
             message=f"Health check failed: {str(e)}"
         )
 
-@router.get("/nodes", response_status=status.HTTP_200_OK, response_model=List[Dict[str, Any]])
+@router.get("/nodes", status_code=status.HTTP_200_OK, response_model=List[Dict[str, Any]])
 async def list_nodes(
     registry: NodeRegistry = Depends(get_registry)
 ) -> List[Dict[str, Any]]:
@@ -180,3 +180,5 @@ async def list_nodes(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve nodes: {str(e)}"
         )
+
+agents = router

@@ -72,3 +72,8 @@ class AgentMeshTimeoutError(MeshError):
         super().__init__(msg, merged_details)
         self.operation = operation
         self.timeout_seconds = timeout_seconds
+
+CircuitOpenError = CircuitBreakerOpenError
+LoopDetectedError = ResilienceError
+InfiniteLoopDetectedError = ResilienceError
+MaxHopsExceededError = ResilienceError

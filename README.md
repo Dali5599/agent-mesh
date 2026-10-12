@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/banner.svg" alt="Project Banner" width="100%">
+</p>
+
 # Agent-Mesh: High-Performance Distributed Service Mesh for AI Agent Swarms
 
 <div align="center">

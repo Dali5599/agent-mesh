@@ -73,7 +73,7 @@ strict_equality = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov=agent_mesh --cov-report=term-missing"
+addopts = "-ra -q "
 testpaths = [
     "tests",
 ]

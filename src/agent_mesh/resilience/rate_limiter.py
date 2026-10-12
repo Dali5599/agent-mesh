@@ -1,108 +1,46 @@
 import time
-import asyncio
-from typing import Dict, Tuple, Optional
-from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
+import threading
+from typing import Dict
+from agent_mesh.resilience.exceptions import RateLimitExceededError
 
-@dataclass
-class RateLimitResult:
-    allowed: bool
-    limit: int
-    remaining: int
-    reset_after_seconds: float
-    retry_after: Optional[float] = None
+class TokenBucketRateLimiter:
+    def __init__(self, capacity: float = 10.0, refill_rate: float = 1.0):
+        self.capacity = float(capacity)
+        self.refill_rate = float(refill_rate)
+        self.tokens = float(capacity)
+        self.last_update = time.time()
+        self._lock = threading.Lock()
 
-class BaseRateLimiter(ABC):
-    @abstractmethod
-    async def acquire(self, key: str, cost: int = 1) -> RateLimitResult:
-        pass
-
-class TokenBucketRateLimiter(BaseRateLimiter):
-    def __init__(self, capacity: int, refill_rate_per_second: float):
-        self.capacity = capacity
-        self.refill_rate = refill_rate_per_second
-        self._buckets: Dict[str, Tuple[float, float]] = {}
-        self._lock = asyncio.Lock()
-
-    async def acquire(self, key: str, cost: int = 1) -> RateLimitResult:
-        async with self._lock:
+    def consume(self, tokens: float = 1.0) -> bool:
+        with self._lock:
             now = time.time()
-            if key not in self._buckets:
-                self._buckets[key] = (float(self.capacity), now)
+            elapsed = now - self.last_update
+            self.last_update = now
+            self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)
+            if self.tokens >= tokens:
+                self.tokens -= tokens
+                return True
+            return False
 
-            tokens, last_update = self._buckets[key]
-            
-            elapsed = now - last_update
-            tokens = min(float(self.capacity), tokens + elapsed * self.refill_rate)
-            
-            if tokens >= cost:
-                tokens -= cost
-                self._buckets[key] = (tokens, now)
-                remaining = int(tokens)
-                return RateLimitResult(
-                    allowed=True,
-                    limit=self.capacity,
-                    remaining=remaining,
-                    reset_after_seconds=0.0
-                )
-            else:
-                deficit = cost - tokens
-                retry_after = deficit / self.refill_rate if self.refill_rate > 0 else float('inf')
-                self._buckets[key] = (tokens, now)
-                return RateLimitResult(
-                    allowed=False,
-                    limit=self.capacity,
-                    remaining=int(tokens),
-                    reset_after_seconds=retry_after,
-                    retry_after=retry_after
-                )
-
-class SlidingWindowRateLimiter(BaseRateLimiter):
-    def __init__(self, limit: int, window_size_seconds: float):
-        self.limit = limit
-        self.window_size = window_size_seconds
-        self._windows: Dict[str, list] = {}
-        self._lock = asyncio.Lock()
-
-    async def acquire(self, key: str, cost: int = 1) -> RateLimitResult:
-        async with self._lock:
-            now = time.time()
-            if key not in self._windows:
-                self._windows[key] = []
-
-            timestamps = self._windows[key]
-            cutoff = now - self.window_size
-            
-            while timestamps and timestamps[0] <= cutoff:
-                timestamps.pop(0)
-
-            current_usage = len(timestamps)
-            
-            if current_usage + cost <= self.limit:
-                for _ in range(cost):
-                    timestamps.append(now)
-                remaining = self.limit - len(timestamps)
-                return RateLimitResult(
-                    allowed=True,
-                    limit=self.limit,
-                    remaining=remaining,
-                    reset_after_seconds=self.window_size
-                )
-            else:
-                oldest_relevant = timestamps[0] if timestamps else now
-                retry_after = max(0.0, (oldest_relevant + self.window_size) - now)
-                remaining = max(0, self.limit - current_usage)
-                return RateLimitResult(
-                    allowed=False,
-                    limit=self.limit,
-                    remaining=remaining,
-                    reset_after_seconds=retry_after,
-                    retry_after=retry_after
-                )
+TokenBucket = TokenBucketRateLimiter
 
 class DistributedRateLimiter:
-    def __init__(self, limiter: BaseRateLimiter):
-        self.limiter = limiter
+    def __init__(self, default_capacity: float = 10.0, default_refill_rate: float = 1.0):
+        self.default_capacity = float(default_capacity)
+        self.default_refill_rate = float(default_refill_rate)
+        self.buckets: Dict[str, TokenBucketRateLimiter] = {}
+        self._lock = threading.Lock()
 
-    async def check_rate_limit(self, key: str, cost: int = 1) -> RateLimitResult:
-        return await self.limiter.acquire(key, cost=cost)
+    def check_rate(self, key: str, tokens: float = 1.0) -> bool:
+        with self._lock:
+            if key not in self.buckets:
+                self.buckets[key] = TokenBucketRateLimiter(self.default_capacity, self.default_refill_rate)
+            return self.buckets[key].consume(tokens)
+
+    def acquire(self, key: str, tokens: float = 1.0) -> None:
+        if not self.check_rate(key, tokens):
+            raise RateLimitExceededError(key)
+
+RateLimiterManager = DistributedRateLimiter
+RateLimiter = DistributedRateLimiter
+GlobalRateLimiter = DistributedRateLimiter

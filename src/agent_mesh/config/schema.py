@@ -256,3 +256,13 @@ class AgentMeshConfig(BaseModel):
         default=LoadBalancingStrategy.ROUND_ROBIN,
         description="Default traffic load balancing strategy."
     )
+
+
+MeshConfig = AgentMeshConfig
+NodeConfig = NodeLimitsConfig
+
+
+class TransportConfig(BaseModel):
+    host: str = "0.0.0.0"
+    port: int = 8080
+    timeout_seconds: float = 30.0

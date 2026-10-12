@@ -157,3 +157,5 @@ class TransportClient:
 
     async def delete(self, url: str, service_name: str = "default", **kwargs: Any) -> httpx.Response:
         return await self.request("DELETE", url, service_name=service_name, **kwargs)
+
+MeshClient = TransportClient

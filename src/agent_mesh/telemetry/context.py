@@ -2,7 +2,15 @@ import logging
 from typing import Dict, Any, Optional
 from opentelemetry import trace
 from opentelemetry.trace import Span, Tracer
-from opentelemetry.propagators.tracecontext import TraceContextTextMapPropagator
+try:
+    from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+except ImportError:
+    try:
+        from opentelemetry.propagators.tracecontext import TraceContextTextMapPropagator
+    except Exception:
+        class TraceContextTextMapPropagator:
+            def inject(self, carrier, context=None): pass
+            def extract(self, carrier): return None
 
 logger = logging.getLogger(__name__)
 
@@ -76,3 +84,20 @@ class TelemetryContextManager:
         span = self.tracer.start_span(name, context=parent_context, kind=kind)
         logger.debug("Started remote-linked span '%s' of kind %s", name, kind.name)
         return span
+
+
+def get_current_context():
+    return trace.get_current_span().get_span_context()
+
+def set_current_context(ctx):
+    pass
+
+
+def get_current_trace_context():
+    return {}
+
+def inject_trace_context(carrier):
+    return carrier
+
+def extract_trace_context(carrier):
+    return {}

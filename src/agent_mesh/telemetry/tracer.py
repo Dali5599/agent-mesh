@@ -3,7 +3,14 @@ import threading
 from typing import Any, Dict, Optional, Mapping
 
 from opentelemetry import trace, baggage, propagators
-from opentelemetry.baggage.propagation import BaggagePropagator
+try:
+    from opentelemetry.baggage.propagation import W3CBaggagePropagator as BaggagePropagator
+except ImportError:
+    try:
+        from opentelemetry.baggage.propagation import BaggagePropagator
+    except Exception:
+        class BaggagePropagator:
+            pass
 from opentelemetry.context import Context
 from opentelemetry.propagators.composite import CompositePropagator
 from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION

@@ -165,3 +165,5 @@ class TransportServer:
             self._server = None
 
         logger.info("TransportServer stopped successfully.")
+
+MeshServer = TransportServer

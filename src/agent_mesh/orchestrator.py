@@ -155,3 +155,5 @@ class MeshOrchestrator:
             "circuit_breakers": self.circuit_breaker_manager.get_all_states(),
             "rate_limiters": self.rate_limiter_manager.get_stats()
         }
+
+AgentOrchestrator = MeshOrchestrator

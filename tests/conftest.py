@@ -80,7 +80,6 @@ def transport_client() -> TransportClient:
 async def transport_server(mesh_config: MeshConfig, mesh_orchestrator: MeshOrchestrator) -> AsyncGenerator[TransportServer, None]:
     """Provide a running TransportServer instance tied to an orchestrator."""
     server = TransportServer(host=mesh_config.node.host, port=mesh_config.node.port, orchestrator=mesh_orchestrator)
-    # Start server tasks or background processing if needed
     yield server
 
 
